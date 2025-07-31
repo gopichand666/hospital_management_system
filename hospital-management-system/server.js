@@ -355,32 +355,42 @@ app.put('/api/doctor/appointments/:id/status', authMiddleware, isDoctor, async (
 // Patient Registration Route
 app.post('/api/patient/register', async (req, res) => {
     const { fullName, username, email, password, dateOfBirth, gender, address } = req.body;
-    try {
-        // Check if username or email already exists
-        let user = await User.findOne({ username });
-        if (user) { return res.status(400).json({ msg: 'Username already exists' }); }
-        user = await User.findOne({ email });
-        if (email && user) { return res.status(400).json({ msg: 'Email already registered' }); }
+   // Replace the try...catch block in your /api/patient/register route with this one:
 
-        // Create new patient user
-        user = new User({ fullName, username, email, password, role: 'patient', dateOfBirth, gender, address });
-        await user.save();
+try {
+    // Check if username or email already exists
+    let user = await User.findOne({ username });
+    if (user) { return res.status(400).json({ msg: 'Username already exists' }); }
+    user = await User.findOne({ email });
+    if (email && user) { return res.status(400).json({ msg: 'Email already registered' }); }
 
-        // Generate token for auto-login after registration
-        const payload = { user: { id: user.id, username: user.username, role: user.role } };
-        jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
-            if (err) throw err;
-            res.status(201).json({ msg: 'Patient registered successfully', token, role: user.role, userId: user.id, username: user.username, fullName: user.fullName });
-        });
-    } catch (err) {
-        console.error(err.message);
-        if (err.name === 'ValidationError') {
-            let errors = {}; Object.keys(err.errors).forEach((key) => { errors[key] = err.errors[key].message; });
-            return res.status(400).json({ msg: 'Validation Error', errors });
-        }
-        res.status(500).send('Server error');
+    // Create new patient user
+    user = new User({ fullName, username, email, password, role: 'patient', dateOfBirth, gender, address });
+    await user.save();
+
+    // Generate token for auto-login after registration
+    const payload = { user: { id: user.id, username: user.username, role: user.role } };
+    jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+        if (err) throw err;
+        res.status(201).json({ msg: 'Patient registered successfully', token, role: user.role, userId: user.id, username: user.username, fullName: user.fullName });
+    });
+} catch (err) {
+    console.error(err.message);
+    // Check for duplicate key error from MongoDB
+    if (err.code === 11000) {
+        return res.status(400).json({ msg: 'Username or email is already in use.' });
     }
-});
+    // Check for Mongoose validation errors
+    if (err.name === 'ValidationError') {
+        let errors = {};
+        Object.keys(err.errors).forEach((key) => {
+            errors[key] = err.errors[key].message;
+        });
+        return res.status(400).json({ msg: 'Validation Error', errors });
+    }
+    // For all other errors, send a generic server error
+    res.status(500).send('Server error');
+}
 
 // Patient Login Route
 app.post('/api/patient/login', (req, res) => loginUser(req, res, 'patient'));
