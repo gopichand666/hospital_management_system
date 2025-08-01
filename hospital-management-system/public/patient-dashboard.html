@@ -300,7 +300,7 @@
 
                 if (!isValid) {
                     alert('Please correct the errors in the form.');
-                    return; // Stop submission if client-side validation fails
+                    return; 
                 }
 
                 try {
@@ -397,7 +397,7 @@
                         upcomingAppointmentsCount.textContent = upcomingCount;
                         previousVisitsCount.textContent = previousCount;
 
-                        // Add event listeners for cancel buttons (NOW ENABLED)
+                        // Add event listeners for cancel buttons 
                         document.querySelectorAll('.cancel-appointment-btn').forEach(button => {
                             button.addEventListener('click', (e) => {
                                 updateAppointmentStatus(e.target.dataset.id, 'Cancelled'); // Calls the function to cancel
@@ -452,7 +452,6 @@
                 }
             }
 
-            // Initial fetches when the page loads
             fetchUserData();
             fetchDoctorsForPatient(); // Load doctors for dropdown and table
             fetchPatientAppointments(); // Load patient's appointments
