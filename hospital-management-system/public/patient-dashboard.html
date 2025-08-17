@@ -7,149 +7,101 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="flex h-screen">
-        <aside class="w-64 bg-purple-700 text-white flex flex-col">
-            <div class="p-6 text-2xl font-bold border-b border-purple-600">
-                Patient Portal
+<body class="bg-slate-100 font-sans">
+    <div class="relative min-h-screen md:flex">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
+
+        <aside id="sidebar" class="w-64 bg-indigo-800 text-white flex-col fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-30">
+            <div class="p-6 text-2xl font-bold border-b border-indigo-700 flex justify-between items-center">
+                <span>Patient Portal</span>
+                <button id="close-menu-button" class="md:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
             <nav class="flex-grow">
                 <ul class="py-4">
-                    <li>
-                        <a href="#" class="block py-3 px-6 hover:bg-purple-600 transition duration-200 ease-in-out">
-                            My Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#book-appointment" class="block py-3 px-6 hover:bg-purple-600 transition duration-200 ease-in-out">
-                            Book Appointment
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#my-appointments" class="block py-3 px-6 hover:bg-purple-600 transition duration-200 ease-in-out">
-                            My Appointments
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#doctor-details" class="block py-3 px-6 hover:bg-purple-600 transition duration-200 ease-in-out">
-                            Doctor Details
-                        </a>
-                    </li>
+                    <li><a href="#dashboard-home" class="block py-3 px-6 hover:bg-indigo-700 transition-colors duration-200">My Dashboard</a></li>
+                    <li><a href="#book-appointment" class="block py-3 px-6 hover:bg-indigo-700 transition-colors duration-200">Book Appointment</a></li>
+                    <li><a href="#my-appointments" class="block py-3 px-6 hover:bg-indigo-700 transition-colors duration-200">My Appointments</a></li>
+                    <li><a href="#doctor-details" class="block py-3 px-6 hover:bg-indigo-700 transition-colors duration-200">Doctor Details</a></li>
                 </ul>
             </nav>
-            <div class="p-6 border-t border-purple-600">
-                <button id="logoutButton" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out">
+            <div class="p-6 border-t border-indigo-700">
+                <button id="logoutButton" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300">
                     Logout
                 </button>
             </div>
         </aside>
 
         <main class="flex-1 overflow-y-auto">
-            <header class="bg-white shadow-sm p-6 flex justify-between items-center">
-                <h1 class="text-3xl font-bold text-gray-800">Patient Dashboard</h1>
-                <div class="flex items-center space-x-4">
-                    <span id="patientWelcomeMessage" class="text-gray-700">Welcome, Patient!</span>
+            <header class="bg-white shadow-sm p-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="menu-button" class="text-slate-800 mr-4 md:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h1 class="text-2xl font-bold text-slate-800">Patient Dashboard</h1>
                 </div>
+                <span id="patientWelcomeMessage" class="text-slate-700 text-sm hidden sm:block">Welcome, Patient!</span>
             </header>
 
             <section class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Upcoming Appointments</h3>
-                        <p id="upcomingAppointmentsCount" class="text-4xl font-bold text-blue-600">0</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Available Doctors</h3>
-                        <p id="availableDoctorsCount" class="text-4xl font-bold text-green-600">0</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Previous Visits</h3>
-                        <p id="previousVisitsCount" class="text-4xl font-bold text-purple-600">0</p>
+                <div id="dashboard-home" class="dashboard-section">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-semibold text-slate-700 mb-2">Upcoming Appointments</h3>
+                            <p id="upcomingAppointmentsCount" class="text-4xl font-bold text-cyan-600">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-semibold text-slate-700 mb-2">Available Doctors</h3>
+                            <p id="availableDoctorsCount" class="text-4xl font-bold text-green-600">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-semibold text-slate-700 mb-2">Previous Visits</h3>
+                            <p id="previousVisitsCount" class="text-4xl font-bold text-indigo-600">0</p>
+                        </div>
                     </div>
                 </div>
 
-                <div id="book-appointment" class="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Book a New Appointment</h2>
-                    <form id="bookAppointmentForm" class="space-y-4">
-                        <div>
-                            <label for="doctorSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Doctor</label>
-                            <select id="doctorSelect" name="doctorId" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required>
-                                <option value="">-- Select a Doctor --</option>
-                            </select>
-                            <p id="error-doctorSelect" class="text-red-500 text-xs mt-1 hidden">Please select a doctor.</p>
-                        </div>
-                        <div>
-                            <label for="appointmentDate" class="block text-sm font-medium text-gray-700 mb-1">Appointment Date</label>
-                            <input type="date" id="appointmentDate" name="date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required>
-                            <p id="error-appointmentDate" class="text-red-500 text-xs mt-1 hidden">Appointment date must be in the future.</p>
-                        </div>
-                        <div>
-                            <label for="appointmentTime" class="block text-sm font-medium text-gray-700 mb-1">Appointment Time</label>
-                            <input type="time" id="appointmentTime" name="time" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required>
-                            <p id="error-appointmentTime" class="text-red-500 text-xs mt-1 hidden">Please use HH:MM format for time.</p>
-                        </div>
-                        <div>
-                            <label for="reason" class="block text-sm font-medium text-gray-700 mb-1">Reason for Visit</label>
-                            <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required></textarea>
-                            <p id="error-reason" class="text-red-500 text-xs mt-1 hidden">Reason for visit is required.</p>
-                        </div>
-                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out">
-                            Book Appointment
-                        </button>
+                <div id="book-appointment" class="dashboard-section hidden bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4">Book a New Appointment</h2>
+                    <form id="bookAppointmentForm" class="space-y-4 max-w-lg">
+                        <div><label for="doctorSelect" class="block text-sm font-medium text-slate-700 mb-1">Select Doctor</label><select id="doctorSelect" name="doctorId" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required><option value="">-- Select a Doctor --</option></select><p id="error-doctorSelect" class="text-red-500 text-xs mt-1 hidden">Please select a doctor.</p></div>
+                        <div><label for="appointmentDate" class="block text-sm font-medium text-slate-700 mb-1">Appointment Date</label><input type="date" id="appointmentDate" name="date" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required><p id="error-appointmentDate" class="text-red-500 text-xs mt-1 hidden">Appointment date must be in the future.</p></div>
+                        <div><label for="appointmentTime" class="block text-sm font-medium text-slate-700 mb-1">Appointment Time</label><input type="time" id="appointmentTime" name="time" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required><p id="error-appointmentTime" class="text-red-500 text-xs mt-1 hidden">Please use HH:MM format for time.</p></div>
+                        <div><label for="reason" class="block text-sm font-medium text-slate-700 mb-1">Reason for Visit</label><textarea id="reason" name="reason" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required></textarea><p id="error-reason" class="text-red-500 text-xs mt-1 hidden">Reason for visit is required.</p></div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">Book Appointment</button>
                     </form>
                 </div>
 
-                <div id="my-appointments" class="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">My Appointments</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Doctor</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Date</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Time</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Reason</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Status</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="patientAppointmentsTableBody"></tbody>
-                        </table>
-                    </div>
+                <div id="my-appointments" class="dashboard-section hidden bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4">My Appointments</h2>
+                    <div class="overflow-x-auto"><table class="min-w-full bg-white"><thead class="bg-slate-50"><tr><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Doctor</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Date</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Time</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Reason</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Status</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Actions</th></tr></thead><tbody id="patientAppointmentsTableBody"></tbody></table></div>
                 </div>
 
-                <div id="doctor-details" class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Doctor Details</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Name</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Specialty</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Email</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Contact</th>
-                                </tr>
-                            </thead>
-                            <tbody id="allDoctorsTableBody"></tbody>
-                        </table>
-                    </div>
+                <div id="doctor-details" class="dashboard-section hidden bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4">Doctor Details</h2>
+                    <div class="overflow-x-auto"><table class="min-w-full bg-white"><thead class="bg-slate-50"><tr><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Name</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Specialty</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Email</th><th class="py-3 px-4 border-b text-left text-sm font-semibold text-slate-600 uppercase">Contact</th></tr></thead><tbody id="allDoctorsTableBody"></tbody></table></div>
                 </div>
             </section>
         </main>
     </div>
+
     <script src="/js/auth.js"></script>
-    <script>
+    <script src="/js/dashboard.js"></script> <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const welcomeMessage = document.getElementById('patientWelcomeMessage');
             const bookAppointmentForm = document.getElementById('bookAppointmentForm');
-            const doctorSelect = document.getElementById('doctorSelect');
+             const doctorSelect = document.getElementById('doctorSelect');
             const patientAppointmentsTableBody = document.getElementById('patientAppointmentsTableBody');
             const allDoctorsTableBody = document.getElementById('allDoctorsTableBody');
             const upcomingAppointmentsCount = document.getElementById('upcomingAppointmentsCount');
             const availableDoctorsCount = document.getElementById('availableDoctorsCount');
             const previousVisitsCount = document.getElementById('previousVisitsCount');
 
-            // Error display elements for validation
             const errorDoctorSelect = document.getElementById('error-doctorSelect');
             const errorAppointmentDate = document.getElementById('error-appointmentDate');
             const errorAppointmentTime = document.getElementById('error-appointmentTime');
@@ -157,26 +109,22 @@
 
             const token = localStorage.getItem('token');
             const userRole = localStorage.getItem('userRole');
-            const userId = localStorage.getItem('userId');
+           const userId = localStorage.getItem('userId');
             const username = localStorage.getItem('username');
             const fullName = localStorage.getItem('fullName');
 
-            // --- Authentication Check (Crucial for preventing redirection on refresh) ---
             if (!token || userRole !== 'patient' || !userId) {
-                window.location.replace('/patient-login.html'); // Use replace to prevent back button issues
-                return; // Stop script execution
+                window.location.replace('/patient-login.html');
+                return;
             }
-            // --- End Authentication Check ---
 
             welcomeMessage.textContent = `Welcome, ${fullName || username || 'Patient'}!`;
 
-            // --- Logout Button ---
             document.getElementById('logoutButton').addEventListener('click', () => {
-                localStorage.clear(); // Clears all stored user data
+                localStorage.clear();
                 window.location.href = '/patient-login.html';
             });
 
-            // --- Helper to fetch user data for welcome message if not already in localStorage ---
             async function fetchUserData() {
                 try {
                     const response = await fetch('/api/user/me', {
@@ -185,11 +133,9 @@
                     if (response.ok) {
                         const userData = await response.json();
                         welcomeMessage.textContent = `Welcome, ${userData.fullName || userData.username}!`;
-                        // Update localStorage with full name if not already there or to ensure freshness
                         localStorage.setItem('fullName', userData.fullName);
                         localStorage.setItem('username', userData.username);
                     } else if (response.status === 401 || response.status === 403) {
-                        // Token expired or invalid, force logout
                         localStorage.clear();
                         window.location.replace('/patient-login.html');
                     } else {
@@ -197,14 +143,12 @@
                     }
                 } catch (error) {
                     console.error('Network error fetching user data:', error);
-                    // Critical network error or token issue, redirect
                     localStorage.clear();
                     window.location.replace('/patient-login.html');
                 }
             }
 
 
-            // --- Function to fetch and populate doctors in the dropdown and table ---
             async function fetchDoctorsForPatient() {
                 try {
                     const response = await fetch('/api/patient/doctors', {
@@ -217,23 +161,22 @@
 
                     if (response.ok) {
                         const doctors = await response.json();
-                        doctorSelect.innerHTML = '<option value="">-- Select a Doctor --</option>'; // Reset dropdown
-                        allDoctorsTableBody.innerHTML = ''; // Reset table
+                        doctorSelect.innerHTML = '<option value="">-- Select a Doctor --</option>';
+                        allDoctorsTableBody.innerHTML = '';
 
                         doctors.forEach(doctor => {
-                            // Populate dropdown
                             const option = document.createElement('option');
                             option.value = doctor._id;
                             option.textContent = `${doctor.fullName} (${doctor.specialty})`;
                             doctorSelect.appendChild(option);
 
-                            // Populate table
+                            // Added hover effect class to the table row
                             const row = `
-                                <tr>
-                                    <td class="py-2 px-4 border-b text-gray-800">${doctor.fullName}</td>
-                                    <td class="py-2 px-4 border-b text-gray-800">${doctor.specialty}</td>
-                                    <td class="py-2 px-4 border-b text-gray-800">${doctor.email || 'N/A'}</td>
-                                    <td class="py-2 px-4 border-b text-gray-800">${doctor.contactNumber || 'N/A'}</td>
+                                <tr class="hover:bg-slate-50 transition-colors duration-200">
+                                    <td class="py-2 px-4 border-b text-slate-800">${doctor.fullName}</td>
+                                    <td class="py-2 px-4 border-b text-slate-800">${doctor.specialty}</td>
+                                    <td class="py-2 px-4 border-b text-slate-800">${doctor.email || 'N/A'}</td>
+                                    <td class="py-2 px-4 border-b text-slate-800">${doctor.contactNumber || 'N/A'}</td>
                                 </tr>
                             `;
                             allDoctorsTableBody.insertAdjacentHTML('beforeend', row);
@@ -251,17 +194,12 @@
                 } catch (error) {
                     console.error('Network error or failed to fetch doctors:', error);
                     alert('Error connecting to the server to fetch doctors.');
-                    // Consider redirecting on persistent network errors if essential data can't load
-                    // localStorage.clear();
-                    // window.location.replace('/patient-login.html');
                 }
             }
 
-            // --- Function to handle form validation and submission ---
             bookAppointmentForm.addEventListener('submit', async (event) => {
-                event.preventDefault(); // Prevent default form submission
+                event.preventDefault();
 
-                // Clear previous errors
                 errorDoctorSelect.classList.add('hidden');
                 errorAppointmentDate.classList.add('hidden');
                 errorAppointmentTime.classList.add('hidden');
@@ -272,9 +210,8 @@
 
                 let isValid = true;
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); // Normalize to start of day
+                today.setHours(0, 0, 0, 0);
 
-                // Client-side validation
                 if (!data.doctorId) {
                     errorDoctorSelect.textContent = 'Please select a doctor.';
                     errorDoctorSelect.classList.remove('hidden');
@@ -286,7 +223,6 @@
                     errorAppointmentDate.classList.remove('hidden');
                     isValid = false;
                 }
-                // Basic time format validation (frontend)
                 if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(data.time)) {
                     errorAppointmentTime.textContent = 'Please use HH:MM format for time.';
                     errorAppointmentTime.classList.remove('hidden');
@@ -316,12 +252,10 @@
                     const result = await response.json();
                     if (response.ok) {
                         alert(result.msg || 'Appointment booked successfully!');
-                        bookAppointmentForm.reset(); // Clear form
-                        fetchPatientAppointments(); // Refresh patient's appointment list
+                        bookAppointmentForm.reset();
+                        fetchPatientAppointments();
                     } else {
-                        // Display backend validation errors
                         if (response.status === 400 && result.msg === 'Validation Error' && result.errors) {
-                            // Loop through backend errors and display them
                             for (const field in result.errors) {
                                 const errorElement = document.getElementById(`error-${field}`);
                                 if (errorElement) {
@@ -345,7 +279,6 @@
                 }
             });
 
-            // --- Function to fetch and display patient's appointments ---
             async function fetchPatientAppointments() {
                 try {
                     const response = await fetch('/api/patient/appointments', {
@@ -358,34 +291,34 @@
 
                     if (response.ok) {
                         const appointments = await response.json();
-                        patientAppointmentsTableBody.innerHTML = ''; // Clear existing rows
+                        patientAppointmentsTableBody.innerHTML = '';
                         let upcomingCount = 0;
                         let previousCount = 0;
                         const today = new Date();
-                        today.setHours(0, 0, 0, 0); // Normalize for comparison
+                        today.setHours(0, 0, 0, 0);
 
                         appointments.forEach(appt => {
                             const apptDate = new Date(appt.date);
-                            const normalizedApptDate = new Date(apptDate); // Normalize for consistent comparison
+                            const normalizedApptDate = new Date(apptDate);
                             normalizedApptDate.setHours(0, 0, 0, 0);
 
                             const statusClass = appt.status === 'Confirmed' ? 'text-green-600' :
                                                 appt.status === 'Pending' ? 'text-yellow-600' :
                                                 appt.status === 'Cancelled' ? 'text-red-600' : 'text-gray-600';
 
-                            // Determine upcoming vs. previous
                             if (normalizedApptDate >= today && appt.status !== 'Cancelled' && appt.status !== 'Completed') {
                                 upcomingCount++;
                             } else if (normalizedApptDate < today || appt.status === 'Cancelled' || appt.status === 'Completed') {
                                 previousCount++;
                             }
 
+                            // Added hover effect class to the table row
                             const row = `
-                                <tr>
-                                    <td class="py-2 px-4 border-b text-gray-800">${appt.doctor ? appt.doctor.fullName : 'N/A'}</td>
-                                    <td class="py-2 px-4 border-b text-gray-800">${new Date(appt.date).toLocaleDateString()}</td>
-                                    <td class="py-2 px-4 border-b text-gray-800">${appt.time}</td>
-                                    <td class="py-2 px-4 border-b text-gray-800">${appt.reason}</td>
+                                <tr class="hover:bg-slate-50 transition-colors duration-200">
+                                    <td class="py-2 px-4 border-b text-slate-800">${appt.doctor ? appt.doctor.fullName : 'N/A'}</td>
+                                    <td class="py-2 px-4 border-b text-slate-800">${new Date(appt.date).toLocaleDateString()}</td>
+                                    <td class="py-2 px-4 border-b text-slate-800">${appt.time}</td>
+                                    <td class="py-2 px-4 border-b text-slate-800">${appt.reason}</td>
                                     <td class="py-2 px-4 border-b ${statusClass} font-semibold">${appt.status}</td>
                                     <td class="py-2 px-4 border-b">
                                         ${appt.status === 'Pending' || appt.status === 'Confirmed' ? `<button class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-2 rounded-md cancel-appointment-btn" data-id="${appt._id}">Cancel</button>` : ''}
@@ -397,10 +330,9 @@
                         upcomingAppointmentsCount.textContent = upcomingCount;
                         previousVisitsCount.textContent = previousCount;
 
-                        // Add event listeners for cancel buttons 
                         document.querySelectorAll('.cancel-appointment-btn').forEach(button => {
                             button.addEventListener('click', (e) => {
-                                updateAppointmentStatus(e.target.dataset.id, 'Cancelled'); // Calls the function to cancel
+                                updateAppointmentStatus(e.target.dataset.id, 'Cancelled');
                             });
                         });
 
@@ -418,13 +350,10 @@
                 }
             }
 
-            // --- Function to update appointment status (for patient to cancel) ---
             async function updateAppointmentStatus(id, status) {
-                // Confirm with the user before cancelling
                 if (!confirm(`Are you sure you want to ${status.toLowerCase()} this appointment?`)) return;
 
                 try {
-                    // This fetches from the backend route specifically for patient cancellation
                     const response = await fetch(`/api/patient/appointments/${id}/status`, {
                         method: 'PUT',
                         headers: {
@@ -437,10 +366,9 @@
                     const result = await response.json();
                     if (response.ok) {
                         alert(result.msg || `Appointment ${status.toLowerCase()} successfully!`);
-                        fetchPatientAppointments(); // Refresh list after update
+                        fetchPatientAppointments();
                     } else {
                         alert(`Error: ${result.msg || 'Failed to update appointment status.'}`);
-                        // Handle re-authentication if token issue
                         if (response.status === 401 || response.status === 403) {
                             localStorage.clear();
                             window.location.replace('/patient-login.html');
@@ -453,9 +381,10 @@
             }
 
             fetchUserData();
-            fetchDoctorsForPatient(); // Load doctors for dropdown and table
-            fetchPatientAppointments(); // Load patient's appointments
+            fetchDoctorsForPatient();
+            fetchPatientAppointments();
         });
     </script>
+
 </body>
 </html>

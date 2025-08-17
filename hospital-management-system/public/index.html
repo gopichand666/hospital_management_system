@@ -8,12 +8,16 @@
 
     <style>
         body.background-image-container {
-            background-image: url('https://zydushospitals.com/public/storage/hospitals/1737375807.webp');
+            /* Replace 'images/medical_background.jpg' with the actual path to your image */
+            /* This path is relative to the HTML file itself, assuming the image is in public/images */
+            background-image: url('https://media.istockphoto.com/id/1419877131/photo/building-facade-of-a-hospital-in-commercial-and-business-district-under-blue-sky.jpg?s=612x612&w=0&k=20&c=wGxVbFSxljSZb_t_qROE4RwsCgssKbGlqawAtmQ88Ls=');
             background-size: cover;
             background-position: center;       
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
+
+        /* Optional: Semi-transparent overlay for better text readability */
         body.background-image-container::before {
             content: "";
             position: absolute;
@@ -24,6 +28,8 @@
             background-color: rgba(0, 0, 0, 0.4); /* Dark overlay, 40% opacity */
             z-index: 0;
         }
+
+        /* Ensure the main content box is above the overlay */
         body > div {
             position: relative;
             z-index: 10;

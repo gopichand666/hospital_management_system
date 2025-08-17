@@ -359,7 +359,6 @@ app.post('/api/patient/register', async (req, res) => {
         // Check if username or email already exists
         let user = await User.findOne({ username });
         if (user) { return res.status(400).json({ msg: 'Username already exists' }); }
-        
         user = await User.findOne({ email });
         if (email && user) { return res.status(400).json({ msg: 'Email already registered' }); }
 
@@ -375,22 +374,14 @@ app.post('/api/patient/register', async (req, res) => {
         });
     } catch (err) {
         console.error(err.message);
-        // Check for duplicate key error from MongoDB
-        if (err.code === 11000) {
-            return res.status(400).json({ msg: 'Username or email is already in use.' });
-        }
-        // Check for Mongoose validation errors
         if (err.name === 'ValidationError') {
-            let errors = {};
-            Object.keys(err.errors).forEach((key) => {
-                errors[key] = err.errors[key].message;
-            });
+            let errors = {}; Object.keys(err.errors).forEach((key) => { errors[key] = err.errors[key].message; });
             return res.status(400).json({ msg: 'Validation Error', errors });
         }
-        // For all other errors, send a generic server error
         res.status(500).send('Server error');
     }
 });
+
 // Patient Login Route
 app.post('/api/patient/login', (req, res) => loginUser(req, res, 'patient'));
 

@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            console.log(result);
 
             if (response.ok) {
                 alert(result.msg || 'Success!');

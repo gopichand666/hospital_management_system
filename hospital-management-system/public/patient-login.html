@@ -9,15 +9,20 @@
     
     <style>
         body.background-image-container {
-            background-image: url('https://zydushospitals.com/public/storage/hospitals/1737375807.webp');
+            /* Background image for login page */
+            background-image: url('https://img.freepik.com/free-photo/doctor-with-stethoscope-hand-hospital-background_1423-1.jpg');
             background-size: cover;
             background-position: center;       
             background-repeat: no-repeat;
             background-attachment: fixed;
+            position: relative;
+            min-height: 100vh;
         }
+
+        /* Semi-transparent overlay for better text readability */
         body.background-image-container::before {
             content: "";
-            position: absolute;
+            position: fixed;   /* ✅ Changed from absolute */
             top: 0;
             left: 0;
             right: 0;
@@ -25,6 +30,8 @@
             background-color: rgba(0, 0, 0, 0.4); /* Dark overlay, 40% opacity */
             z-index: 0;
         }
+
+        /* Ensure the main content box is above the overlay */
         body > div {
             position: relative;
             z-index: 10;
@@ -32,29 +39,36 @@
     </style>
 
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="background-image-container flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Patient Login</h2>
         <form id="patientLoginForm" class="space-y-4">
             <div>
                 <label for="patientUsername" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                <input type="text" id="patientUsername" name="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required>
+                <input type="text" id="patientUsername" name="username" 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                    focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required>
             </div>
             <div>
                 <label for="patientPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="patientPassword" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required>
+                <input type="password" id="patientPassword" name="password" 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                    focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" required>
             </div>
-            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out">
+            <button type="submit" 
+                class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md 
+                transition duration-300 ease-in-out">
                 Login
             </button>
         </form>
         <p class="mt-4 text-center text-sm text-gray-600">
-            Don't have an account? <a href="/patient-register.html" class="text-purple-600 hover:text-purple-800">Register here</a>
+            Don't have an account? 
+            <a href="/patient-register.html" class="text-purple-600 hover:text-purple-800">Register here</a>
         </p>
         <p class="mt-2 text-center text-sm text-gray-600">
             <a href="/" class="text-purple-600 hover:text-purple-800">Back to Home</a>
         </p>
     </div>
-    <script src="/js/auth.js"></script> <!-- CHANGED HERE -->
+    <script src="/js/auth.js"></script>
 </body>
 </html>

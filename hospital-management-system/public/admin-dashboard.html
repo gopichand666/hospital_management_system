@@ -4,493 +4,956 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - HMS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* General Styles */
+        body {
+            background-color: #f3f4f6;
+            font-family: sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #1f2937;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            background-color: #111827;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #60a5fa;
+            border-bottom: 1px solid #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: #d1d5db;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: #374151;
+            color: #fff;
+        }
+        
+        .sidebar-nav a svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 24px;
+            border-top: 1px solid #374151;
+        }
+
+        .logout-button {
+            width: 100%;
+            text-align: center;
+            background-color: #dc2626;
+            color: #fff;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #b91c1c;
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .main-header {
+            background-color: #fff;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .main-header h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #1f2937;
+            margin: 0;
+            letter-spacing: 0.025em;
+        }
+
+        .welcome-text {
+            color: #374151;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        /* Sections */
+        .main-section {
+            padding: 24px 40px;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Dashboard Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-top: 4px solid;
+        }
+
+        .card-blue {
+            border-top-color: #3b82f6;
+        }
+
+        .card-yellow {
+            border-top-color: #eab308;
+        }
+
+        .card-green {
+            border-top-color: #22c55e;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 48px;
+            font-weight: 800;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card-value.blue {
+            color: #2563eb;
+        }
+
+        .card-value.yellow {
+            color: #ca8a04;
+        }
+
+        .card-value.green {
+            color: #16a34a;
+        }
+        
+        .loading-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Form and Tables */
+        .section-box {
+            background-color: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            margin-bottom: 40px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .section-box h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            font-size: 16px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        .form-button {
+            width: 100%;
+            background-color: #2563eb;
+            color: #fff;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-button:hover {
+            background-color: #1d4ed8;
+            transform: scale(1.05);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+        
+        .data-table thead th {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table tbody td {
+            color: #374151;
+        }
+
+        .table-action-button {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .table-action-button.remove {
+            background-color: #ef4444;
+        }
+        
+        .table-action-button.remove:hover {
+            background-color: #dc2626;
+        }
+
+        .table-action-button.approve {
+            background-color: #22c55e;
+            margin-right: 8px;
+        }
+
+        .table-action-button.approve:hover {
+            background-color: #16a34a;
+        }
+
+        .table-action-button.reject {
+            background-color: #ef4444;
+        }
+
+        .table-action-button.reject:hover {
+            background-color: #dc2626;
+        }
+        
+        .table-action-button.confirm {
+            background-color: #3b82f6;
+            margin-right: 8px;
+        }
+
+        .table-action-button.confirm:hover {
+            background-color: #2563eb;
+        }
+
+        .table-action-button.cancel {
+            background-color: #ef4444;
+        }
+
+        .table-action-button.cancel:hover {
+            background-color: #dc2626;
+        }
+        
+        .table-action-button.complete {
+            background-color: #6b7280;
+            margin-right: 8px;
+        }
+
+        .table-action-button.complete:hover {
+            background-color: #4b5563;
+        }
+
+        .table-action-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Status Colors */
+        .status-green { color: #16a34a; }
+        .status-yellow { color: #ca8a04; }
+        .status-red { color: #dc2626; }
+        .status-gray { color: #4b5563; }
+        
+        /* Media Queries for Responsiveness */
+        @media (min-width: 768px) {
+            .sidebar.hidden {
+                transform: translateX(0);
+            }
+        }
+    </style>
+    <script src="/js/auth.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="flex h-screen">
-        <aside class="w-64 bg-gray-800 text-white flex flex-col">
-            <div class="p-6 text-2xl font-bold border-b border-gray-700">
-                Admin Panel
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Admin Panel
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="#dashboard">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001 1h-3M9 21h6" />
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#add-doctor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        Add Doctor
+                    </a>
+                </li>
+                <li>
+                    <a href="#manage-doctors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        View/Remove Doctors
+                    </a>
+                </li>
+                <li>
+                    <a href="#manage-leaves">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m0 0V9a2 2 0 012-2h2m0 0V5a2 2 0 012-2h4a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        Manage Leaves
+                    </a>
+                </li>
+                <li>
+                    <a href="#manage-appointments">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h8m-8 4h8m-9 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                        </svg>
+                        Manage Appointments
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logoutButton" class="logout-button">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="main-header">
+            <h1>Admin Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <span class="welcome-text">Welcome, Admin! 👋</span>
             </div>
-            <nav class="flex-grow">
-                <ul class="py-4">
-                    <li>
-                        <a href="#" class="block py-3 px-6 hover:bg-gray-700 transition duration-200 ease-in-out">
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#add-doctor" class="block py-3 px-6 hover:bg-gray-700 transition duration-200 ease-in-out">
-                            Add Doctor
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#manage-doctors" class="block py-3 px-6 hover:bg-gray-700 transition duration-200 ease-in-out">
-                            View/Remove Doctors
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#manage-leaves" class="block py-3 px-6 hover:bg-gray-700 transition duration-200 ease-in-out">
-                            Manage Leaves
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#manage-appointments" class="block py-3 px-6 hover:bg-gray-700 transition duration-200 ease-in-out">
-                            Manage Appointments
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="p-6 border-t border-gray-700">
-                <button id="logoutButton" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out">
-                    Logout
-                </button>
+        </header>
+
+        <section class="main-section content-section dashboard-section active" id="dashboard">
+            <div class="card-grid">
+                <div class="card card-blue">
+                    <h3>Total Doctors</h3>
+                    <p id="totalDoctorsCount" class="card-value blue">
+                        <span class="loading-animation">Loading...</span>
+                    </p>
+                </div>
+                <div class="card card-yellow">
+                    <h3>Pending Leaves</h3>
+                    <p id="pendingLeavesCount" class="card-value yellow">
+                        <span class="loading-animation">Loading...</span>
+                    </p>
+                </div>
+                <div class="card card-green">
+                    <h3>Total Appointments</h3>
+                    <p id="totalAppointmentsCount" class="card-value green">
+                        <span class="loading-animation">Loading...</span>
+                    </p>
+                </div>
             </div>
-        </aside>
+        </section>
 
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white shadow-sm p-6 flex justify-between items-center">
-                <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">Welcome, Admin!</span>
-                </div>
-            </header>
-
-            <section class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Total Doctors</h3>
-                        <p id="totalDoctorsCount" class="text-4xl font-bold text-blue-600">Loading...</p>
+        <section class="main-section content-section" id="add-doctor">
+            <div class="section-box">
+                <h2>Add New Doctor</h2>
+                <form id="addDoctorForm" class="form-container">
+                    <div class="form-group">
+                        <label for="docFullName">Full Name</label>
+                        <input type="text" id="docFullName" name="fullName" required>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Pending Leaves</h3>
-                        <p id="pendingLeavesCount" class="text-4xl font-bold text-yellow-600">Loading...</p>
+                    <div class="form-group">
+                        <label for="docUsername">Username</label>
+                        <input type="text" id="docUsername" name="username" required>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Total Appointments</h3>
-                        <p id="totalAppointmentsCount" class="text-4xl font-bold text-green-600">Loading...</p>
+                    <div class="form-group">
+                        <label for="docEmail">Email</label>
+                        <input type="email" id="docEmail" name="email" required>
                     </div>
-                </div>
-
-                <div id="add-doctor" class="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Add New Doctor</h2>
-                    <form id="addDoctorForm" class="space-y-4">
-                        <div>
-                            <label for="docFullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                            <input type="text" id="docFullName" name="fullName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                        </div>
-                        <div>
-                            <label for="docUsername" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                            <input type="text" id="docUsername" name="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                        </div>
-                        <div>
-                            <label for="docEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="docEmail" name="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                        </div>
-                        <div>
-                            <label for="docPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <input type="password" id="docPassword" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                        </div>
-                        <div>
-                            <label for="docSpecialty" class="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
-                            <input type="text" id="docSpecialty" name="specialty" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                        </div>
-                        <div>
-                            <label for="docContact" class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
-                            <input type="text" id="docContact" name="contactNumber" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out">
-                            Add Doctor
-                        </button>
-                    </form>
-                </div>
-
-                <div id="manage-doctors" class="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">View/Remove Doctors</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">ID</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Name</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Specialty</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Email</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="doctorsTableBody">
-                                </tbody>
-                        </table>
+                    <div class="form-group">
+                        <label for="docPassword">Password</label>
+                        <input type="password" id="docPassword" name="password" required>
                     </div>
-                </div>
-
-                <div id="manage-leaves" class="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Manage Doctor Leaves</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Doctor Name</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Type</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">From</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">To</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Reason</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Status</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Requested On</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leavesTableBody">
-                                </tbody>
-                        </table>
+                    <div class="form-group">
+                        <label for="docSpecialty">Specialty</label>
+                        <input type="text" id="docSpecialty" name="specialty" required>
                     </div>
-                </div>
-
-                <div id="manage-appointments" class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Manage Appointments</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Patient</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Doctor</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Date</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Time</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Reason</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Status</th>
-                                    <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="appointmentsTableBody">
-                                </tbody>
-                        </table>
+                    <div class="form-group">
+                        <label for="docContact">Contact Number</label>
+                        <input type="text" id="docContact" name="contactNumber">
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="docDob">Date of Birth</label>
+                        <input type="date" id="docDob" name="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="docPlaceOfBirth">Place of Birth</label>
+                        <input type="text" id="docPlaceOfBirth" name="placeOfBirth" required>
+                    </div>
+                    <button type="submit" class="form-button">
+                        Add Doctor
+                    </button>
+                </form>
+            </div>
+        </section>
 
-            </section>
-        </main>
-    </div>
+        <section class="main-section content-section" id="manage-doctors">
+            <div class="section-box">
+                <h2>View/Remove Doctors</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Specialty</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="main-section content-section" id="manage-leaves">
+            <div class="section-box">
+                <h2>Manage Doctor Leaves</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Doctor Name</th>
+                                <th>Type</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Requested On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leavesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="main-section content-section" id="manage-appointments">
+            <div class="section-box">
+                <h2>Manage Appointments</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
     <script src="/js/auth.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        const addDoctorForm = document.getElementById('addDoctorForm');
-        const doctorsTableBody = document.getElementById('doctorsTableBody');
-        const totalDoctorsCount = document.getElementById('totalDoctorsCount');
-        const leavesTableBody = document.getElementById('leavesTableBody');
-        const pendingLeavesCount = document.getElementById('pendingLeavesCount');
-        const appointmentsTableBody = document.getElementById('appointmentsTableBody');
-        const totalAppointmentsCount = document.getElementById('totalAppointmentsCount');
+        document.addEventListener('DOMContentLoaded', async () => {
+            const addDoctorForm = document.getElementById('addDoctorForm');
+            const doctorsTableBody = document.getElementById('doctorsTableBody');
+            const totalDoctorsCount = document.getElementById('totalDoctorsCount');
+            const leavesTableBody = document.getElementById('leavesTableBody');
+            const pendingLeavesCount = document.getElementById('pendingLeavesCount');
+            const appointmentsTableBody = document.getElementById('appointmentsTableBody');
+            const totalAppointmentsCount = document.getElementById('totalAppointmentsCount');
+            const sidebarNav = document.querySelector('.sidebar-nav');
+            const allSections = document.querySelectorAll('.content-section');
 
-        // Check for token
-        const token = localStorage.getItem('token');
-        const userRole = localStorage.getItem('userRole');
-        if (!token || userRole !== 'admin') {
-            window.location.href = '/admin-login.html';
-            return;
-        }
-
-        // Logout
-        document.getElementById('logoutButton').addEventListener('click', () => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userRole');
-            window.location.href = '/admin-login.html';
-        });
-
-        const getAdminToken = () => localStorage.getItem('token');
-
-        // Fetch doctors
-        async function fetchDoctors() {
-            try {
-                const response = await fetch('/api/admin/doctors', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-auth-token': getAdminToken()
-                    }
+            // --- Navigation Logic ---
+            const showSection = (sectionId) => {
+                allSections.forEach(section => {
+                    section.classList.remove('active');
                 });
+                document.getElementById(sectionId).classList.add('active');
+            };
 
-                if (response.ok) {
-                    const doctors = await response.json();
-                    doctorsTableBody.innerHTML = '';
-                    totalDoctorsCount.textContent = doctors.length;
-
-                    doctors.forEach(doctor => {
-                        doctorsTableBody.insertAdjacentHTML('beforeend', `
-                            <tr>
-                                <td class="py-2 px-4 border-b text-gray-800">${doctor._id.substring(0, 6)}...</td>
-                                <td class="py-2 px-4 border-b text-gray-800">${doctor.fullName}</td>
-                                <td class="py-2 px-4 border-b text-gray-800">${doctor.specialty}</td>
-                                <td class="py-2 px-4 border-b text-gray-800">${doctor.email}</td>
-                                <td class="py-2 px-4 border-b">
-                                    <button class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-2 rounded-md remove-doctor-btn" data-id="${doctor._id}">Remove</button>
-                                </td>
-                            </tr>
-                        `);
-                    });
-
-                    document.querySelectorAll('.remove-doctor-btn').forEach(button =>
-                        button.addEventListener('click', removeDoctor)
-                    );
-                } else {
-                    const err = await response.json();
-                    alert(err.msg || 'Failed to fetch doctors');
-                    if (response.status === 401 || response.status === 403) {
-                        localStorage.clear();
-                        window.location.href = '/admin-login.html';
-                    }
+            sidebarNav.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.closest('a')?.getAttribute('href')?.substring(1);
+                if (targetId) {
+                    showSection(targetId);
                 }
-            } catch (err) {
-                console.error(err);
-                alert('Error connecting to server to fetch doctors.');
-            }
-        }
+            });
 
-        // Add doctor
-        addDoctorForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(addDoctorForm).entries());
-
-            try {
-                const response = await fetch('/api/admin/doctors', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-auth-token': getAdminToken()
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.msg || 'Doctor added!');
-                    addDoctorForm.reset();
-                    fetchDoctors();
-                    fetchLeaves();
-                    fetchAppointments();
-                } else {
-                    alert(result.msg || 'Failed to add doctor');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Error adding doctor');
-            }
-        });
-
-        // Remove doctor
-        async function removeDoctor(e) {
-            if (!confirm('Are you sure you want to remove this doctor?')) return;
-
-            const id = e.target.dataset.id;
-            try {
-                const response = await fetch(`/api/admin/doctors/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'x-auth-token': getAdminToken()
-                    }
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.msg || 'Doctor removed');
-                    fetchDoctors();
-                    fetchLeaves();
-                    fetchAppointments();
-                } else {
-                    alert(result.msg || 'Failed to remove doctor');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Error removing doctor');
-            }
-        }
-
-        // Fetch leaves
-        async function fetchLeaves() {
-            try {
-                const response = await fetch('/api/admin/leaves', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-auth-token': getAdminToken()
-                    }
-                });
-
-                if (response.ok) {
-                    const leaves = await response.json();
-                    leavesTableBody.innerHTML = '';
-                    let pending = 0;
-
-                    leaves.forEach(leave => {
-                        if (leave.status === 'Pending') pending++;
-                        const statusColor = {
-                            Approved: 'text-green-600',
-                            Rejected: 'text-red-600',
-                            Pending: 'text-yellow-600'
-                        }[leave.status] || 'text-gray-600';
-
-                        leavesTableBody.insertAdjacentHTML('beforeend', `
-                            <tr>
-                                <td class="py-2 px-4 border-b">${leave.doctor?.fullName || 'N/A'}</td>
-                                <td class="py-2 px-4 border-b">${leave.leaveType}</td>
-                                <td class="py-2 px-4 border-b">${new Date(leave.startDate).toLocaleDateString()}</td>
-                                <td class="py-2 px-4 border-b">${new Date(leave.endDate).toLocaleDateString()}</td>
-                                <td class="py-2 px-4 border-b">${leave.reason || 'N/A'}</td>
-                                <td class="py-2 px-4 border-b ${statusColor} font-semibold">${leave.status}</td>
-                                <td class="py-2 px-4 border-b">${new Date(leave.requestedAt).toLocaleDateString()}</td>
-                                <td class="py-2 px-4 border-b">
-                                    ${leave.status === 'Pending' ? `
-                                        <button class="approve-leave-btn bg-green-500 text-white text-xs font-bold py-1 px-2 rounded-md mr-2" data-id="${leave._id}">Approve</button>
-                                        <button class="reject-leave-btn bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-md" data-id="${leave._id}">Reject</button>
-                                    ` : `
-                                        <button disabled class="bg-gray-400 text-white text-xs font-bold py-1 px-2 rounded-md mr-2">Approve</button>
-                                        <button disabled class="bg-gray-400 text-white text-xs font-bold py-1 px-2 rounded-md">Reject</button>
-                                    `}
-                                </td>
-                            </tr>
-                        `);
-                    });
-
-                    pendingLeavesCount.textContent = pending;
-
-                    document.querySelectorAll('.approve-leave-btn').forEach(btn =>
-                        btn.addEventListener('click', e => updateLeaveStatus(e.target.dataset.id, 'Approved'))
-                    );
-                    document.querySelectorAll('.reject-leave-btn').forEach(btn =>
-                        btn.addEventListener('click', e => updateLeaveStatus(e.target.dataset.id, 'Rejected'))
-                    );
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Error fetching leaves');
-            }
-        }
-
-        async function updateLeaveStatus(id, status) {
-            if (!confirm(`Are you sure to ${status.toLowerCase()} this leave?`)) return;
-
-            try {
-                const response = await fetch(`/api/admin/leaves/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-auth-token': getAdminToken()
-                    },
-                    body: JSON.stringify({ status })
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.msg || `Leave ${status.toLowerCase()} successfully!`);
-                    fetchLeaves();
-                } else {
-                    alert(result.msg || 'Error updating leave status');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Error updating leave');
-            }
-        }
-
-        // Fetch appointments
-        async function fetchAppointments() {
-            try {
-                const response = await fetch('/api/admin/appointments', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-auth-token': getAdminToken()
-                    }
-                });
-
-                if (response.ok) {
-                    const appointments = await response.json();
-                    appointmentsTableBody.innerHTML = '';
-                    totalAppointmentsCount.textContent = appointments.length;
-
-                    appointments.forEach(appt => {
-                        const statusClass = {
-                            Confirmed: 'text-green-600',
-                            Pending: 'text-yellow-600',
-                            Cancelled: 'text-red-600',
-                            Completed: 'text-gray-600'
-                        }[appt.status] || 'text-gray-700';
-
-                        appointmentsTableBody.insertAdjacentHTML('beforeend', `
-                            <tr>
-                                <td class="py-2 px-4 border-b">${appt.patient?.fullName || 'N/A'}</td>
-                                <td class="py-2 px-4 border-b">${appt.doctor?.fullName || 'N/A'} (${appt.doctor?.specialty || 'N/A'})</td>
-                                <td class="py-2 px-4 border-b">${new Date(appt.date).toLocaleDateString()}</td>
-                                <td class="py-2 px-4 border-b">${appt.time}</td>
-                                <td class="py-2 px-4 border-b">${appt.reason}</td>
-                                <td class="py-2 px-4 border-b ${statusClass} font-semibold">${appt.status}</td>
-                                <td class="py-2 px-4 border-b">
-                                    ${appt.status === 'Pending' ? `
-                                        <button class="update-appt-admin-btn bg-blue-500 text-white text-xs font-bold py-1 px-2 rounded-md mr-2" data-id="${appt._id}" data-status="Confirmed">Confirm</button>
-                                        <button class="update-appt-admin-btn bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-md" data-id="${appt._id}" data-status="Cancelled">Cancel</button>
-                                    ` : appt.status === 'Confirmed' ? `
-                                        <button class="update-appt-admin-btn bg-gray-500 text-white text-xs font-bold py-1 px-2 rounded-md mr-2" data-id="${appt._id}" data-status="Completed">Complete</button>
-                                        <button class="update-appt-admin-btn bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-md" data-id="${appt._id}" data-status="Cancelled">Cancel</button>
-                                    ` : `
-                                        <button disabled class="bg-gray-400 text-white text-xs font-bold py-1 px-2 rounded-md mr-2">Confirm</button>
-                                        <button disabled class="bg-gray-400 text-white text-xs font-bold py-1 px-2 rounded-md">Cancel</button>
-                                    `}
-                                </td>
-                            </tr>
-                        `);
-                    });
-
-                    document.querySelectorAll('.update-appt-admin-btn').forEach(btn =>
-                        btn.addEventListener('click', e => {
-                            const id = e.target.dataset.id;
-                            const status = e.target.dataset.status;
-                            updateAppointmentStatusAdmin(id, status);
-                        })
-                    );
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Error fetching appointments');
-            }
-        }
-
-        // ✅ NEW: Update appointment status function
-        async function updateAppointmentStatusAdmin(id, status) {
-    if (!confirm(`Are you sure you want to ${status.toLowerCase()} this appointment?`)) return;
-
-    try {
-        // This is the line that needs to be changed:
-        const response = await fetch(`/api/admin/appointments/${id}/status`, { // <--- CORRECTED LINE!
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-auth-token': getAdminToken()
-            },
-            body: JSON.stringify({ status })
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            alert(result.msg || `Appointment ${status.toLowerCase()} successfully!`);
-            fetchAppointments();
-        } else {
-            alert(result.msg || 'Error updating appointment');
-            // Also good practice to handle auth errors here specifically if you haven't elsewhere
-            if (response.status === 401 || response.status === 403) {
-                localStorage.clear();
+            // Check for token
+            const token = localStorage.getItem('token');
+            const userRole = localStorage.getItem('userRole');
+            if (!token || userRole !== 'admin') {
                 window.location.href = '/admin-login.html';
+                return;
             }
-        }
-    } catch (err) {
-        console.error(err);
-        alert('Error updating appointment');
-    }
-}
 
-        // Initial load
-        fetchDoctors();
-        fetchLeaves();
-        fetchAppointments();
-    });
-</script>
+            // Logout
+            document.getElementById('logoutButton').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userRole');
+                window.location.href = '/admin-login.html';
+            });
 
+            const getAdminToken = () => localStorage.getItem('token');
+
+            // Fetch doctors
+            async function fetchDoctors() {
+                try {
+                    const response = await fetch('/api/admin/doctors', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': getAdminToken()
+                        }
+                    });
+
+                    if (response.ok) {
+                        const doctors = await response.json();
+                        doctorsTableBody.innerHTML = '';
+                        totalDoctorsCount.textContent = doctors.length;
+
+                        doctors.forEach(doctor => {
+                            doctorsTableBody.insertAdjacentHTML('beforeend', `
+                                <tr>
+                                    <td>${doctor._id.substring(0, 6)}...</td>
+                                    <td>${doctor.fullName}</td>
+                                    <td>${doctor.specialty}</td>
+                                    <td>${doctor.email}</td>
+                                    <td>
+                                        <button class="table-action-button remove" data-id="${doctor._id}">Remove</button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                        
+                        document.querySelectorAll('.table-action-button.remove').forEach(button =>
+                            button.addEventListener('click', removeDoctor)
+                        );
+                    } else {
+                        const err = await response.json();
+                        alert(err.msg || 'Failed to fetch doctors');
+                        if (response.status === 401 || response.status === 403) {
+                            localStorage.clear();
+                            window.location.href = '/admin-login.html';
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error connecting to server to fetch doctors.');
+                }
+            }
+
+            // Add doctor
+            addDoctorForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = Object.fromEntries(new FormData(addDoctorForm).entries());
+
+                // --- Validation Logic ---
+                const password = data.password;
+                const contactNumber = data.contactNumber;
+                const dob = new Date(data.dob);
+                const today = new Date();
+                const minAge = 25;
+                const age = today.getFullYear() - dob.getFullYear();
+                const monthDiff = today.getMonth() - dob.getMonth();
+                const dayDiff = today.getDate() - dob.getDate();
+
+                // Password Validation
+                const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.{7,})/;
+                if (!passwordRegex.test(password)) {
+                    alert('Password must be at least 7 characters long, contain at least one capital letter, and one special character (e.g., !@#$&*).');
+                    return;
+                }
+
+                // Contact Number Validation
+                const contactRegex = /^\d{10}$/;
+                if (contactNumber && !contactRegex.test(contactNumber)) {
+                    alert('Contact number must be exactly 10 digits.');
+                    return;
+                }
+
+                // Date of Birth Validation
+                if (age < minAge || (age === minAge && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)))) {
+                    alert('Doctor must be at least 25 years old.');
+                    return;
+                }
+                // --- End of Validation Logic ---
+
+                try {
+                    const response = await fetch('/api/admin/doctors', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': getAdminToken()
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.msg || 'Doctor added!');
+                        addDoctorForm.reset();
+                        fetchDoctors();
+                        fetchLeaves();
+                        fetchAppointments();
+                    } else {
+                        alert(result.msg || 'Failed to add doctor');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error adding doctor');
+                }
+            });
+
+            // Remove doctor
+            async function removeDoctor(e) {
+                if (!confirm('Are you sure you want to remove this doctor?')) return;
+
+                const id = e.target.dataset.id;
+                try {
+                    const response = await fetch(`/api/admin/doctors/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'x-auth-token': getAdminToken()
+                        }
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.msg || 'Doctor removed');
+                        fetchDoctors();
+                        fetchLeaves();
+                        fetchAppointments();
+                    } else {
+                        alert(result.msg || 'Failed to remove doctor');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error removing doctor');
+                }
+            }
+
+            // Fetch leaves
+            async function fetchLeaves() {
+                try {
+                    const response = await fetch('/api/admin/leaves', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': getAdminToken()
+                        }
+                    });
+
+                    if (response.ok) {
+                        const leaves = await response.json();
+                        leavesTableBody.innerHTML = '';
+                        let pending = 0;
+
+                        leaves.forEach(leave => {
+                            if (leave.status === 'Pending') pending++;
+                            const statusColor = {
+                                Approved: 'status-green',
+                                Rejected: 'status-red',
+                                Pending: 'status-yellow'
+                            }[leave.status] || 'status-gray';
+
+                            leavesTableBody.insertAdjacentHTML('beforeend', `
+                                <tr>
+                                    <td>${leave.doctor?.fullName || 'N/A'}</td>
+                                    <td>${leave.leaveType}</td>
+                                    <td>${new Date(leave.startDate).toLocaleDateString()}</td>
+                                    <td>${new Date(leave.endDate).toLocaleDateString()}</td>
+                                    <td>${leave.reason || 'N/A'}</td>
+                                    <td class="${statusColor}">${leave.status}</td>
+                                    <td>${new Date(leave.requestedAt).toLocaleDateString()}</td>
+                                    <td>
+                                        ${leave.status === 'Pending' ? `
+                                            <button class="table-action-button approve" data-id="${leave._id}">Approve</button>
+                                            <button class="table-action-button reject" data-id="${leave._id}">Reject</button>
+                                        ` : `
+                                            <button disabled class="table-action-button approve">Approve</button>
+                                            <button disabled class="table-action-button reject">Reject</button>
+                                        `}
+                                    </td>
+                                </tr>
+                            `);
+                        });
+
+                        pendingLeavesCount.textContent = pending;
+
+                        document.querySelectorAll('.approve-leave-btn').forEach(btn =>
+                            btn.addEventListener('click', e => updateLeaveStatus(e.target.dataset.id, 'Approved'))
+                        );
+                        document.querySelectorAll('.reject-leave-btn').forEach(btn =>
+                            btn.addEventListener('click', e => updateLeaveStatus(e.target.dataset.id, 'Rejected'))
+                        );
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error fetching leaves');
+                }
+            }
+
+            async function updateLeaveStatus(id, status) {
+                if (!confirm(`Are you sure to ${status.toLowerCase()} this leave?`)) return;
+
+                try {
+                    const response = await fetch(`/api/admin/leaves/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': getAdminToken()
+                        },
+                        body: JSON.stringify({ status })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.msg || `Leave ${status.toLowerCase()} successfully!`);
+                        fetchLeaves();
+                    } else {
+                        alert(result.msg || 'Error updating leave status');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error updating leave');
+                }
+            }
+
+            // Fetch appointments
+            async function fetchAppointments() {
+                try {
+                    const response = await fetch('/api/admin/appointments', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': getAdminToken()
+                        }
+                    });
+
+                    if (response.ok) {
+                        const appointments = await response.json();
+                        appointmentsTableBody.innerHTML = '';
+                        totalAppointmentsCount.textContent = appointments.length;
+
+                        appointments.forEach(appt => {
+                            const statusClass = {
+                                Confirmed: 'status-green',
+                                Pending: 'status-yellow',
+                                Cancelled: 'status-red',
+                                Completed: 'status-gray'
+                            }[appt.status] || 'status-gray';
+
+                            appointmentsTableBody.insertAdjacentHTML('beforeend', `
+                                <tr>
+                                    <td>${appt.patient?.fullName || 'N/A'}</td>
+                                    <td>${appt.doctor?.fullName || 'N/A'} (${appt.doctor?.specialty || 'N/A'})</td>
+                                    <td>${new Date(appt.date).toLocaleDateString()}</td>
+                                    <td>${appt.time}</td>
+                                    <td>${appt.reason}</td>
+                                    <td class="${statusClass}">${appt.status}</td>
+                                    <td>
+                                        ${appt.status === 'Pending' ? `
+                                            <button class="table-action-button confirm" data-id="${appt._id}" data-status="Confirmed">Confirm</button>
+                                            <button class="table-action-button cancel" data-id="${appt._id}" data-status="Cancelled">Cancel</button>
+                                        ` : appt.status === 'Confirmed' ? `
+                                            <button class="table-action-button complete" data-id="${appt._id}" data-status="Completed">Complete</button>
+                                            <button class="table-action-button cancel" data-id="${appt._id}" data-status="Cancelled">Cancel</button>
+                                        ` : `
+                                            <button disabled class="table-action-button confirm">Confirm</button>
+                                            <button disabled class="table-action-button cancel">Cancel</button>
+                                        `}
+                                    </td>
+                                </tr>
+                            `);
+                        });
+
+                        document.querySelectorAll('.update-appt-admin-btn').forEach(btn =>
+                            btn.addEventListener('click', e => {
+                                const id = e.target.dataset.id;
+                                const status = e.target.dataset.status;
+                                updateAppointmentStatusAdmin(id, status);
+                            })
+                        );
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error fetching appointments');
+                }
+            }
+
+            // Update appointment status function
+            async function updateAppointmentStatusAdmin(id, status) {
+                if (!confirm(`Are you sure you want to ${status.toLowerCase()} this appointment?`)) return;
+
+                try {
+                    const response = await fetch(`/api/admin/appointments/${id}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': getAdminToken()
+                        },
+                        body: JSON.stringify({ status })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.msg || `Appointment ${status.toLowerCase()} successfully!`);
+                        fetchAppointments();
+                    } else {
+                        alert(result.msg || 'Error updating appointment');
+                        if (response.status === 401 || response.status === 403) {
+                            localStorage.clear();
+                            window.location.href = '/admin-login.html';
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error updating appointment');
+                }
+            }
+
+            // Initial load
+            fetchDoctors();
+            fetchLeaves();
+            fetchAppointments();
+        });
+    </script>
 </body>
 </html>
